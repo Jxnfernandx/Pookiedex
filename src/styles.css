@@ -1,0 +1,26 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+
+#pokedex-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background-color: red;
+}
+
+.pokemon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: #fff solid;
+
+}
+
+@media only screen and (max-width: 600px) {
+    #pokedex-container {
+        display: flex;
+        flex-direction: column;
+    }
+}

@@ -1,98 +1,66 @@
+const container = document.getElementById("pokedex-container") as HTMLElement;
 
-/* type objType = {
-    objName: string;
-    objInfoURL: string;
-}
-
-let objArray: Array<objType> = [];
-
-const fetchPokemonArray = async () => { 
-   const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10&offset=0");
-   if (!response.ok) {
-     throw new Error(response.statusText);
-   }
-   const data = await response.json();
-   objArray = data.results.map((pokemon: any) => ({
-     objName: pokemon.name,
-     objInfoURL: pokemon.url
-   }));
-}
-
-*/
-
-/* class Pokemon {
-    name: string;
-    infoURL: string;
-    id: number;
-    imageURL: string;
-    type: string[];
-    stats: string[];
-
-    constructor(name: string, infoURL: string, id: number, imageURL: string, type: string[], stats: string[]) {
-        this.name = name;
-        this.infoURL = infoURL;
-        this.id = id;
-        this.imageURL = imageURL;
-        this.type = type;
-        this.stats = stats;
-    }
-}
-
-
-let pokedex: Array<Pokemon> = [];
-
-const fetchPokemonArray = async () => { 
-    const response1 = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10&offset=0");
-    const data1 = await response1.json();
-    pokedex = data1.results.map((data1: any) => ({
-        name: data1.name,
-        infoURL: data1.url
-    }));
-    
- }
-
- const logPokemon = async () => {
-    await fetchPokemonArray();
-    console.log(pokedex);
-  }
-  
-  logPokemon();
-
-const fetchPokemonInfo = async (id: number) => {
-    const response2 = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`)
-    const data2 = await response2.json();
-    pokedex = data2.
-
-}
-
-*/ 
-
-const container = document.getElementById("pokedex-container");
-const pokemonElement = document.createElement("img");
+// Global Pokemon list for better encapsulation
 const pokedex: Pokemon[] = [];
-let sampleSize = pokedex.length + 8;
 
+const pageSize = 21; // Number of Pokemon to fetch per page
+let currentPage = 1; // Current page index
+
+// Pokemon class with more descriptive and consistent property names
 class Pokemon {
-    id: number;
-    name: string;
-    sprite: string;
+  id: number;
+  spriteUrl: string; // Renamed for clarity
+  name: string;
 
-    constructor(id: number, name: string, sprite: string) {
-        this.id = id;
-        this.name = name;
-        this.sprite = sprite;
-    }
-}
-
-const fetchPokemonData = () => {
-  for(let i: number = 1; i <= 8; i++) {
-    fetch(`https://pokeapi.co/api/v2/pokemon/${i}/`)
-    .then(response => response.json())
-    .then((data) => {
-    let pokemon = new Pokemon(data.id, data.name, data.sprites.front_default);
-    pokedex.push(pokemon);
-  });
+  constructor(id: number, spriteUrl: string, name: string) {
+    this.id = id;
+    this.spriteUrl = spriteUrl;
+    this.name = name;
   }
 }
 
+async function fetchPokemonData(page: number = 1): Promise<void> {
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize - 1;
+
+  for (let i = startIndex; i <= endIndex; i++) {
+    try {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i + 1}/`); // 1-based indexing
+      const data = await response.json();
+      const pokemon = new Pokemon(
+        data.id,
+        data.sprites.other.showdown.front_default, // Correct property for sprite URL
+        data.name
+      );
+      pokedex.push(pokemon);
+    } catch (error) {
+      console.error(`Error fetching Pokémon ${i + 1}:`, error);
+    }
+  }
+}
+
+function renderPokemon(pokemonList: Pokemon[]) {
+  container.innerHTML = ""; // Clear existing content
+
+  pokemonList.forEach((pokemon) => {
+    const card = document.createElement("div");
+    card.classList.add("pokemon-card");
+
+    const idElement = document.createElement("p");
+    idElement.textContent = ` # ${pokemon.id}`;
+    card.appendChild(idElement);
+
+    const img = document.createElement("img");
+    img.src = pokemon.spriteUrl; // Use the correct property
+    card.appendChild(img);
+
+    const name = document.createElement("p");
+    name.textContent = pokemon.name;
+    card.appendChild(name);
+
+    container.appendChild(card);
+  });
+}
+
+fetchPokemonData().then(() => renderPokemon(pokedex));
 
