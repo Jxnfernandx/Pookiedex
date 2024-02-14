@@ -9,11 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const container = document.getElementById("pokedex-container");
-// Global Pokemon list for better encapsulation
-const pokedex = [];
-const pageSize = 21; // Number of Pokemon to fetch per page
-let currentPage = 1; // Current page index
-// Pokemon class with more descriptive and consistent property names
+const pokemonArray = [];
 class Pokemon {
     constructor(id, spriteUrl, name) {
         this.id = id;
@@ -21,22 +17,26 @@ class Pokemon {
         this.name = name;
     }
 }
-function fetchPokemonData(page = 1) {
+function getPokemonData(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const startIndex = (page - 1) * pageSize;
-        const endIndex = startIndex + pageSize - 1;
-        for (let i = startIndex; i <= endIndex; i++) {
-            try {
-                const response = yield fetch(`https://pokeapi.co/api/v2/pokemon/${i + 1}/`); // 1-based indexing
-                const data = yield response.json();
-                const pokemon = new Pokemon(data.id, data.sprites.other.showdown.front_default, // Correct property for sprite URL
-                data.name);
-                pokedex.push(pokemon);
-            }
-            catch (error) {
-                console.error(`Error fetching Pokémon ${i + 1}:`, error);
-            }
+        try {
+            const response = yield fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+            const data = yield response.json();
+            const pokemon = new Pokemon(data.id, data.sprites.other.showdown.front_default, // Correct property for sprite URL
+            data.name);
+            pokemonArray.push(pokemon);
         }
+        catch (error) {
+            console.error(`error`, error);
+        }
+    });
+}
+function storingArray() {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (let i = 1; i <= 21; i++) {
+            yield getPokemonData(i);
+        }
+        console.log(pokemonArray);
     });
 }
 function renderPokemon(pokemonList) {
@@ -56,4 +56,4 @@ function renderPokemon(pokemonList) {
         container.appendChild(card);
     });
 }
-fetchPokemonData().then(() => renderPokemon(pokedex));
+storingArray().then(() => renderPokemon(pokemonArray));
