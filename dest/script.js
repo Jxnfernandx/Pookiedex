@@ -9,6 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const container = document.getElementById("pokedex-container");
+const pageIndex = 21; //Pokemon per page 
+let startIndex = 1;
+let endIndex = 21;
+const retrieveSize = (startIndex) => {
+    endIndex = startIndex + 20;
+};
 const pokemonArray = [];
 class Pokemon {
     constructor(id, spriteUrl, name) {
@@ -31,9 +37,9 @@ function getPokemonData(id) {
         }
     });
 }
-function storingArray() {
+function storingArray(startIndex, endIndex) {
     return __awaiter(this, void 0, void 0, function* () {
-        for (let i = 1; i <= 21; i++) {
+        for (let i = startIndex; i <= endIndex; i++) {
             yield getPokemonData(i);
         }
         console.log(pokemonArray);
@@ -56,4 +62,11 @@ function renderPokemon(pokemonList) {
         container.appendChild(card);
     });
 }
-storingArray().then(() => renderPokemon(pokemonArray));
+storingArray(startIndex, endIndex).then(() => renderPokemon(pokemonArray));
+window.addEventListener('scroll', () => {
+    if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+        startIndex += pageIndex;
+        retrieveSize(startIndex);
+        storingArray(startIndex, endIndex).then(() => renderPokemon(pokemonArray));
+    }
+});

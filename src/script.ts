@@ -1,5 +1,14 @@
 const container = document.getElementById("pokedex-container") as HTMLElement;
 
+const pageIndex: number = 21; //Pokemon per page 
+
+let startIndex: number = 1;
+let endIndex: number = 21;
+
+const retrieveSize = (startIndex: number) => {
+  endIndex = startIndex + 20;
+};
+
 const pokemonArray: Pokemon[] = [];
 
 class Pokemon {
@@ -29,8 +38,8 @@ async function getPokemonData(id: number) {
   }
 }
 
-async function storingArray() {
-  for(let i: number = 1; i <= 21; i++) {
+async function storingArray(startIndex: number, endIndex: number) {
+  for(let i: number = startIndex; i <= endIndex; i++) {
     await getPokemonData(i);
   }
   console.log(pokemonArray);
@@ -59,4 +68,12 @@ function renderPokemon(pokemonList: Pokemon[]) {
   });
 }
 
-storingArray().then(() => renderPokemon(pokemonArray));
+storingArray(startIndex, endIndex).then(() => renderPokemon(pokemonArray));
+
+window.addEventListener('scroll',() => {
+  if(window.scrollY + window.innerHeight >= document.documentElement.scrollHeight){
+    startIndex += pageIndex;
+    retrieveSize(startIndex);
+    storingArray(startIndex, endIndex).then(() => renderPokemon(pokemonArray))
+  }
+})
