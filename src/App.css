@@ -2,20 +2,25 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+input {
+  width: 100%;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.populateui {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+
+.card {
+  border-radius: 1em;
+  border: #1a1a1a solid 1px;
+  padding: 2rem;
+}
+
+.card:hover {
+  background-color: #1a1a1a;
 }
 
 @keyframes logo-spin {
@@ -31,10 +36,6 @@
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
-}
-
-.card {
-  padding: 2em;
 }
 
 .read-the-docs {
